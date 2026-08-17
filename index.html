@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анкета партнера</title>
     
-    <!-- ДОЗВОЛЯЄМО GITHUB PAGES ЗАВАНТАЖИТИ СКРИПТ ТЕЛЕГРАМУ -->
+    <!-- Дозволяємо GitHub Pages підключити зовнішній скрипт -->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; style-src * 'unsafe-inline';">
     
-    <!-- Підключаємо офіційний скрипт -->
+    <!-- Скрипт Telegram завантажується першим -->
     <script src="https://telegram.org"></script>
 </head>
 <body>
@@ -16,7 +16,7 @@
     <h2>Заповніть анкету</h2>
 
     <label>Ім'я:</label><br>
-    <input type="text" id="userName" placeholder="Введіть ім'я"><br><br>
+    <input type="text" id="userName" placeholder="Введіть ім'я123"><br><br>
 
     <label>Вік:</label><br>
     <input type="number" id="userAge" placeholder="Наприклад, 20"><br><br>
@@ -27,40 +27,41 @@
     <button id="submitBtn">Надіслати</button>
 
     <script>
-        // Чекаємо, поки вікно повністю завантажиться
-        window.onload = function() {
-            // Перевіряємо, чи завантажився скрипт Telegram
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.ready(); // Кажемо Телеграму, що додаток готовий
-                tg.expand(); // Розгортаємо на весь екран
+        function initTelegramApp() {
+            // Безпечно перевіряємо наявність об'єкта
+            const tg = window.Telegram?.WebApp;
+
+            if (tg) {
+                tg.ready(); 
+                tg.expand(); 
 
                 document.getElementById('submitBtn').addEventListener('click', () => {
                     const name = document.getElementById('userName').value.trim();
                     const age = document.getElementById('userAge').value.trim();
                     const tiktok = document.getElementById('ttLink').value.trim();
 
-                    // Перевірка полів
                     if (!name || !age || !tiktok) {
                         alert('Будь ласка, заповніть усі поля!');
                         return;
                     }
 
-                    // Збираємо дані в JSON
                     const formData = {
                         name: name,
                         age: age,
                         tiktok: tiktok
                     };
 
-                    // Надсилаємо дані боту (це автоматично закриє Mini App)
+                    // Передаємо дані у Python-код. Вікно закриється автоматично
                     tg.sendData(JSON.stringify(formData));
                 });
             } else {
-                // Якщо скрипт все одно заблоковано, ми побачимо це повідомлення
-                alert("Помилка: Не вдалося підключитися до Telegram WebApp API.");
+                // Якщо скрипт не встиг завантажитись, пробуємо знову через 50 мілісекунд
+                setTimeout(initTelegramApp, 50);
             }
-        };
+        }
+
+        // Запуск ініціалізації
+        initTelegramApp();
     </script>
 
 </body>
