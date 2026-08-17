@@ -1,69 +1,48 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заявка медіа-партнера</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h2>Заявка на медіа-партнерство</h2>
+    <div class="card">
+        <h2>Заявка на медіа-партнерство</h2>
+        <p class="subtitle">Заповни поля нижче, і ми зв'яжемось із тобою</p>
 
-    <form id="partnerForm">
-        <label for="name">Ім'я:</label><br>
-        <input type="text" id="name" name="name"><br><br>
+        <form id="partnerForm">
+            <div class="field">
+                <label for="name">Ім'я</label>
+                <input type="text" id="name" name="name" placeholder="Твоє ім'я" autocomplete="off">
+            </div>
 
-        <label for="age">Вік:</label><br>
-        <input type="number" id="age" name="age"><br><br>
+            <div class="field">
+                <label for="age">Вік</label>
+                <input type="number" id="age" name="age" placeholder="Наприклад, 18" autocomplete="off">
+            </div>
 
-        <label for="tiktok">Посилання на TikTok:</label><br>
-        <input type="text" id="tiktok" name="tiktok"><br><br>
+            <div class="field">
+                <label for="tiktok">Посилання на TikTok акаунт</label>
+                <input type="text" id="tiktok" name="tiktok" placeholder="https://www.tiktok.com/@nickname" autocomplete="off">
+            </div>
 
-        <button type="button" id="submitBtn">Надіслати</button>
-    </form>
+            <button type="button" class="btn_link" id="submitBtn">
+                Надіслати
+                <span class="shine"></span>
+            </button>
 
-    <p id="errorMsg" style="color: red;"></p>
+            <p id="errorMsg"></p>
+        </form>
+    </div>
 
-    <script>
-        var tg = null;
-
-        // Захист від передчасного завантаження: чекаємо, поки з'явиться window.Telegram.WebApp
-        function initApp() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
-            } else {
-                setTimeout(initApp, 100);
-            }
-        }
-        initApp();
-
-        document.getElementById('submitBtn').addEventListener('click', function () {
-            var name = document.getElementById('name').value.trim();
-            var age = document.getElementById('age').value.trim();
-            var tiktok = document.getElementById('tiktok').value.trim();
-            var errorMsg = document.getElementById('errorMsg');
-
-            if (!name || !age || !tiktok) {
-                errorMsg.textContent = "Будь ласка, заповніть усі поля.";
-                return;
-            }
-            errorMsg.textContent = "";
-
-            var formData = {
-                name: name,
-                age: age,
-                tiktok: tiktok
-            };
-
-            if (!tg) {
-                errorMsg.textContent = "Помилка: Telegram WebApp ще не ініціалізовано, спробуйте ще раз.";
-                return;
-            }
-
-            tg.sendData(JSON.stringify(formData));
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
