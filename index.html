@@ -3,66 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Анкета партнера</title>
-    
-    <!-- Дозволяємо GitHub Pages підключити зовнішній скрипт -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; style-src * 'unsafe-inline';">
-    
-    <!-- Скрипт Telegram завантажується першим -->
-    <script src="https://telegram.org"></script>
+    <title>Заявка медіа-партнера</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+    <h2>Заявка на медіа-партнерство</h2>
 
-    <h2>Заповніть анкету</h2>
+    <form id="partnerForm">
+        <label for="name">Ім'я:</label><br>
+        <input type="text" id="name" name="name"><br><br>
 
-    <label>Ім'я:</label><br>
-    <input type="text" id="userName" placeholder="Введіть ім'я123"><br><br>
+        <label for="age">Вік:</label><br>
+        <input type="number" id="age" name="age"><br><br>
 
-    <label>Вік:</label><br>
-    <input type="number" id="userAge" placeholder="Наприклад, 20"><br><br>
+        <label for="tiktok">Посилання на TikTok:</label><br>
+        <input type="text" id="tiktok" name="tiktok"><br><br>
 
-    <label>TikTok:</label><br>
-    <input type="text" id="ttLink" placeholder="https://..."><br><br>
+        <button type="button" id="submitBtn">Надіслати</button>
+    </form>
 
-    <button id="submitBtn">Надіслати</button>
+    <p id="errorMsg" style="color: red;"></p>
 
     <script>
-        function initTelegramApp() {
-            // Безпечно перевіряємо наявність об'єкта
-            const tg = window.Telegram?.WebApp;
+        var tg = null;
 
-            if (tg) {
-                tg.ready(); 
-                tg.expand(); 
-
-                document.getElementById('submitBtn').addEventListener('click', () => {
-                    const name = document.getElementById('userName').value.trim();
-                    const age = document.getElementById('userAge').value.trim();
-                    const tiktok = document.getElementById('ttLink').value.trim();
-
-                    if (!name || !age || !tiktok) {
-                        alert('Будь ласка, заповніть усі поля!');
-                        return;
-                    }
-
-                    const formData = {
-                        name: name,
-                        age: age,
-                        tiktok: tiktok
-                    };
-
-                    // Передаємо дані у Python-код. Вікно закриється автоматично
-                    tg.sendData(JSON.stringify(formData));
-                });
+        // Захист від передчасного завантаження: чекаємо, поки з'явиться window.Telegram.WebApp
+        function initApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
             } else {
-                // Якщо скрипт не встиг завантажитись, пробуємо знову через 50 мілісекунд
-                setTimeout(initTelegramApp, 50);
+                setTimeout(initApp, 100);
             }
         }
+        initApp();
 
-        // Запуск ініціалізації
-        initTelegramApp();
+        document.getElementById('submitBtn').addEventListener('click', function () {
+            var name = document.getElementById('name').value.trim();
+            var age = document.getElementById('age').value.trim();
+            var tiktok = document.getElementById('tiktok').value.trim();
+            var errorMsg = document.getElementById('errorMsg');
+
+            if (!name || !age || !tiktok) {
+                errorMsg.textContent = "Будь ласка, заповніть усі поля.";
+                return;
+            }
+            errorMsg.textContent = "";
+
+            var formData = {
+                name: name,
+                age: age,
+                tiktok: tiktok
+            };
+
+            if (!tg) {
+                errorMsg.textContent = "Помилка: Telegram WebApp ще не ініціалізовано, спробуйте ще раз.";
+                return;
+            }
+
+            tg.sendData(JSON.stringify(formData));
+        });
     </script>
-
 </body>
 </html>
